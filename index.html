@@ -1,393 +1,1669 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Idle Slot Empire</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>Neon Slot Empire</title>
 
 <style>
-body{
-background:#121212;
-color:white;
-font-family:Arial;
-text-align:center;
+
+:root{
+--bg:#0a0a0f;
+--panel:#151520;
+--panel2:#1d1d2e;
+--accent:#00e5ff;
+--gold:#ffd700;
+--purple:#9d4edd;
+--green:#00ff88;
+--red:#ff4d6d;
+}
+
+*{
+box-sizing:border-box;
 margin:0;
+padding:0;
+font-family:Segoe UI,sans-serif;
+}
+
+body{
+background:
+radial-gradient(circle at top,#2b1055,#0a0a0f);
+color:white;
+min-height:100vh;
+overflow-x:hidden;
+}
+
+header{
+padding:20px;
+text-align:center;
 }
 
 h1{
-color:gold;
+font-size:3rem;
+color:var(--gold);
+text-shadow:
+0 0 10px var(--gold),
+0 0 30px var(--gold);
 }
 
-.container{
-max-width:1000px;
+.wrapper{
+max-width:1400px;
 margin:auto;
 padding:20px;
+}
+
+.topbar{
+display:grid;
+grid-template-columns:
+repeat(auto-fit,minmax(180px,1fr));
+gap:10px;
+margin-bottom:20px;
+}
+
+.stat{
+background:var(--panel);
+padding:15px;
+border-radius:12px;
+border:1px solid rgba(255,255,255,.1);
+}
+
+.stat-title{
+font-size:.8rem;
+opacity:.7;
+}
+
+.stat-value{
+font-size:1.3rem;
+margin-top:4px;
+}
+
+.main{
+display:grid;
+grid-template-columns:
+1fr 350px;
+gap:20px;
+}
+
+@media(max-width:1000px){
+.main{
+grid-template-columns:1fr;
+}
+}
+
+.slot-panel{
+background:var(--panel);
+padding:20px;
+border-radius:16px;
 }
 
 .reels{
 display:flex;
 justify-content:center;
-gap:10px;
-margin:20px;
+gap:15px;
+margin:25px 0;
 }
 
 .reel{
-width:100px;
-height:100px;
-font-size:60px;
+width:120px;
+height:120px;
+background:#0d0d14;
+border:3px solid var(--gold);
+border-radius:15px;
 display:flex;
 align-items:center;
 justify-content:center;
-background:#222;
-border:3px solid gold;
-border-radius:10px;
+font-size:4rem;
+box-shadow:
+0 0 10px var(--gold),
+inset 0 0 20px rgba(255,215,0,.2);
+}
+
+.controls{
+display:flex;
+justify-content:center;
+gap:10px;
+flex-wrap:wrap;
 }
 
 button{
-padding:10px;
-margin:5px;
+border:none;
 cursor:pointer;
+padding:12px 18px;
+border-radius:10px;
+font-weight:bold;
+transition:.2s;
+}
+
+button:hover{
+transform:translateY(-2px);
+}
+
+.primary{
+background:linear-gradient(
+135deg,
+var(--gold),
+#ff9900
+);
+}
+
+.secondary{
+background:linear-gradient(
+135deg,
+var(--accent),
+#0099ff
+);
+color:white;
 }
 
 .shop{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+background:var(--panel);
+padding:15px;
+border-radius:16px;
+}
+
+.shop h2{
+margin-bottom:15px;
+}
+
+.upgrade{
+background:var(--panel2);
+padding:12px;
+border-radius:12px;
+margin-bottom:10px;
+}
+
+.upgrade-name{
+font-weight:bold;
+}
+
+.upgrade-cost{
+color:var(--gold);
+margin-top:5px;
+}
+
+.buy-buttons{
+display:flex;
+gap:5px;
+margin-top:8px;
+}
+
+.buy-buttons button{
+flex:1;
+padding:8px;
+font-size:.8rem;
+}
+
+.tabs{
+display:flex;
 gap:10px;
-margin-top:20px;
+margin-bottom:15px;
 }
 
-.card{
+.tab{
+flex:1;
+padding:10px;
+text-align:center;
+background:var(--panel2);
+border-radius:10px;
+cursor:pointer;
+}
+
+.tab.active{
+outline:2px solid var(--accent);
+}
+
+.panel{
+display:none;
+}
+
+.panel.active{
+display:block;
+}
+
+#messages{
+margin-top:15px;
+min-height:40px;
+font-weight:bold;
+text-align:center;
+color:var(--green);
+}
+
+.achievement{
 background:#222;
-padding:10px;
-border-radius:10px;
+padding:8px;
+border-radius:8px;
+margin-bottom:5px;
 }
 
-.stat{
-font-size:20px;
-margin:10px;
-}
-
-.rebirth{
-margin-top:20px;
-background:#300;
+.rebirth-shop-item{
+background:#2b1122;
 padding:10px;
 border-radius:10px;
+margin-bottom:10px;
+}
+
+.particle{
+position:fixed;
+pointer-events:none;
+font-size:24px;
+animation:fly 1.2s linear forwards;
+}
+
+@keyframes fly{
+0%{
+opacity:1;
+transform:translateY(0);
+}
+100%{
+opacity:0;
+transform:translateY(-200px);
+}
 }
 
 </style>
 </head>
+
 <body>
 
-<div class="container">
+<header>
+<h1>🎰 Neon Slot Empire</h1>
+</header>
 
-<h1>🎰 Idle Slot Empire</h1>
+<div class="wrapper">
+
+<div class="topbar">
 
 <div class="stat">
-Coins: <span id="coins">0</span>
+<div class="stat-title">Coins</div>
+<div id="coins" class="stat-value">0</div>
 </div>
 
 <div class="stat">
-Rebirth Tokens: <span id="tokens">0</span>
+<div class="stat-title">Rebirth Tokens</div>
+<div id="tokens" class="stat-value">0</div>
 </div>
+
+<div class="stat">
+<div class="stat-title">Lifetime Coins</div>
+<div id="lifetime" class="stat-value">0</div>
+</div>
+
+<div class="stat">
+<div class="stat-title">Spins</div>
+<div id="spins" class="stat-value">0</div>
+</div>
+
+</div>
+
+<div class="main">
+
+<div class="slot-panel">
 
 <div class="reels">
+
 <div class="reel" id="r1">🍒</div>
 <div class="reel" id="r2">🍒</div>
 <div class="reel" id="r3">🍒</div>
+
 </div>
 
-<button onclick="spin()">SPIN</button>
+<div class="controls">
 
-<div id="result"></div>
+<button id="spinBtn" class="primary">
+SPIN
+</button>
 
-<h2>Shop</h2>
+<button id="autoBtn" class="secondary">
+AUTO OFF
+</button>
+
+</div>
+
+<div id="messages"></div>
+
+</div>
 
 <div class="shop">
 
-<div class="card">
-<h3>Coin Multiplier</h3>
-Level: <span id="multiLevel">0</span><br>
-Cost: <span id="multiCost">50</span><br>
-<button onclick="buyMultiplier()">Buy</button>
+<div class="tabs">
+
+<div class="tab active"
+onclick="switchTab('shop')">
+Shop
 </div>
 
-<div class="card">
-<h3>Unlock Rare Icons</h3>
-Unlocked: <span id="rareLevel">0</span><br>
-Cost: <span id="rareCost">250</span><br>
-<button onclick="buyRare()">Buy</button>
+<div class="tab"
+onclick="switchTab('stats')">
+Stats
 </div>
 
-<div class="card">
-<h3>Auto Spin</h3>
-Level: <span id="autoLevel">0</span><br>
-Cost: <span id="autoCost">1000</span><br>
-<button onclick="buyAuto()">Buy</button>
-</div>
-
-<div class="card">
-<h3>Spin Speed</h3>
-Level: <span id="speedLevel">0</span><br>
-Cost: <span id="speedCost">5000</span><br>
-<button onclick="buySpeed()">Buy</button>
+<div class="tab"
+onclick="switchTab('rebirth')">
+Rebirth
 </div>
 
 </div>
 
-<div class="rebirth">
-<h2>Rebirth</h2>
-<p>Requires 1,000,000 Coins</p>
-<button onclick="rebirth()">REBIRTH</button>
+<div id="shop" class="panel active"></div>
+
+<div id="stats" class="panel"></div>
+
+<div id="rebirth" class="panel"></div>
+
+</div>
+
 </div>
 
 </div>
 
-<script>
+  <script>
 
-let save = JSON.parse(localStorage.getItem("slotSave")) || {
+const saveKey = "neonSlotEmpire_v2";
 
-coins:0,
+const game = JSON.parse(localStorage.getItem(saveKey)) || {
 
-multiplier:1,
-multiLevel:0,
+coins: 0,
+lifetimeCoins: 0,
+spins: 0,
 
-rareLevel:0,
+rebirthTokens: 0,
 
-autoLevel:0,
+multiplierLevel: 0,
+luckLevel: 0,
+rareLevel: 0,
 
-speedLevel:0,
+autoUnlocked: false,
+autoEnabled: false,
 
-rebirthTokens:0
+autoSpeedLevel: 0,
+
+lastSave: Date.now(),
+
+stats:{
+jackpots:0,
+biggestWin:0
+},
+
+achievements:{}
 
 };
 
-let symbols = ["🍒","🍋","🍉","⭐"];
+const symbols = [
+{icon:"🍒", value:10, rarity:1},
+{icon:"🍋", value:15, rarity:1},
+{icon:"🍉", value:20, rarity:1},
+{icon:"⭐", value:30, rarity:2}
+];
 
-function getSymbols(){
+function unlockedSymbols(){
 
-let arr=[...symbols];
+const arr = [...symbols];
 
-if(save.rareLevel>=1) arr.push("💎");
-if(save.rareLevel>=2) arr.push("7️⃣");
-if(save.rareLevel>=3) arr.push("👑");
-if(save.rareLevel>=4) arr.push("🌌");
+if(game.rareLevel >= 1){
+arr.push({icon:"💎", value:120, rarity:4});
+}
+
+if(game.rareLevel >= 2){
+arr.push({icon:"7️⃣", value:350, rarity:5});
+}
+
+if(game.rareLevel >= 3){
+arr.push({icon:"👑", value:1200, rarity:6});
+}
+
+if(game.rareLevel >= 4){
+arr.push({icon:"🌌", value:8000, rarity:10});
+}
 
 return arr;
 
 }
 
+function format(num){
+
+if(num < 1000)
+return Math.floor(num).toString();
+
+const units = [
+"K","M","B","T","Qa","Qi","Sx","Sp","Oc","No"
+];
+
+let unit = -1;
+
+while(num >= 1000){
+num /= 1000;
+unit++;
+}
+
+return num.toFixed(2) + units[unit];
+
+}
+
+function saveGame(){
+
+game.lastSave = Date.now();
+
+localStorage.setItem(
+saveKey,
+JSON.stringify(game)
+);
+
+}
+
+setInterval(saveGame,5000);
+
+window.addEventListener(
+"beforeunload",
+saveGame
+);
+
+function updateTopbar(){
+
+coins.textContent =
+format(game.coins);
+
+tokens.textContent =
+format(game.rebirthTokens);
+
+lifetime.textContent =
+format(game.lifetimeCoins);
+
+spins.textContent =
+format(game.spins);
+
+}
+
 function randomSymbol(){
 
-let pool=getSymbols();
+const pool = unlockedSymbols();
 
-return pool[Math.floor(Math.random()*pool.length)];
+let luckBonus =
+1 + (game.luckLevel * 0.05);
 
-}
+let roll =
+Math.random() ** luckBonus;
 
-function spin(){
+let index =
+Math.floor(
+roll * pool.length
+);
 
-let a=randomSymbol();
-let b=randomSymbol();
-let c=randomSymbol();
-
-r1.textContent=a;
-r2.textContent=b;
-r3.textContent=c;
-
-let reward=0;
-
-if(a===b && b===c){
-
-reward=100;
-
-if(a==="💎") reward=500;
-if(a==="7️⃣") reward=1000;
-if(a==="👑") reward=5000;
-if(a==="🌌") reward=25000;
-
-}
-else if(a===b || b===c || a===c){
-
-reward=25;
+return pool[
+Math.min(index,pool.length-1)
+];
 
 }
 
-reward*=save.multiplier;
-reward*=Math.max(1, save.rebirthTokens+1);
+let spinning = false;
 
-save.coins+=reward;
+async function spin(){
 
-result.innerHTML=
-reward>0 ?
-`Won ${reward.toLocaleString()} coins!`
+if(spinning) return;
+
+spinning = true;
+
+game.spins++;
+
+spinBtn.disabled = true;
+
+const reels = [r1,r2,r3];
+
+let final = [];
+
+for(let i=0;i<3;i++){
+
+let timer = setInterval(()=>{
+
+let s = randomSymbol();
+
+reels[i].textContent =
+s.icon;
+
+},80);
+
+await new Promise(res =>
+setTimeout(
+res,
+900 + (i*350)
+)
+);
+
+clearInterval(timer);
+
+let result =
+randomSymbol();
+
+final.push(result);
+
+reels[i].textContent =
+result.icon;
+
+}
+
+evaluateSpin(final);
+
+spinBtn.disabled = false;
+
+spinning = false;
+
+}
+
+function evaluateSpin(final){
+
+let reward = 0;
+
+const a = final[0];
+const b = final[1];
+const c = final[2];
+
+if(
+a.icon === b.icon &&
+b.icon === c.icon
+){
+
+reward =
+a.value * 25;
+
+game.stats.jackpots++;
+
+message(
+`🎉 JACKPOT! +${format(reward)}`
+);
+
+particleBurst();
+
+}
+else if(
+a.icon === b.icon ||
+a.icon === c.icon ||
+b.icon === c.icon
+){
+
+reward =
+Math.max(
+a.value,
+b.value,
+c.value
+) * 5;
+
+message(
+`✨ Match! +${format(reward)}`
+);
+
+}
+else{
+
+message(
+"Better luck next spin."
+);
+
+}
+
+reward *= (
+1 +
+(game.multiplierLevel * 1)
+);
+
+reward *= (
+1 +
+(game.rebirthTokens * 0.25)
+);
+
+game.coins += reward;
+
+game.lifetimeCoins += reward;
+
+if(
+reward >
+game.stats.biggestWin
+){
+game.stats.biggestWin =
+reward;
+}
+
+updateTopbar();
+
+}
+
+function message(text){
+
+messages.textContent =
+text;
+
+}
+
+function particleBurst(){
+
+for(let i=0;i<25;i++){
+
+const p =
+document.createElement("div");
+
+p.className = "particle";
+
+p.textContent =
+["✨","💰","⭐","🎉"][
+Math.floor(
+Math.random()*4
+)
+];
+
+p.style.left =
+Math.random()*100 + "vw";
+
+p.style.top =
+"70vh";
+
+document.body.appendChild(p);
+
+setTimeout(
+()=>p.remove(),
+1200
+);
+
+}
+
+}
+
+spinBtn.onclick = spin;
+
+let autoLoop = null;
+
+function autoDelay(){
+
+return Math.max(
+1200,
+5000 - (
+game.autoSpeedLevel * 400
+)
+);
+
+}
+
+function updateAuto(){
+
+if(autoLoop){
+clearInterval(autoLoop);
+autoLoop = null;
+}
+
+if(
+game.autoEnabled &&
+game.autoUnlocked
+){
+
+autoLoop =
+setInterval(()=>{
+
+if(!spinning){
+spin();
+}
+
+}, autoDelay());
+
+}
+
+autoBtn.textContent =
+game.autoEnabled
+?
+"AUTO ON"
 :
-`No match`;
-
-update();
+"AUTO OFF";
 
 }
 
-function buyMultiplier(){
+autoBtn.onclick = ()=>{
 
-let cost=Math.floor(50*Math.pow(1.8,save.multiLevel));
+if(!game.autoUnlocked){
 
-if(save.coins>=cost){
+message(
+"Buy Auto Spin first."
+);
 
-save.coins-=cost;
-save.multiLevel++;
-save.multiplier*=2;
-
-update();
-
+return;
 }
 
-}
+game.autoEnabled =
+!game.autoEnabled;
 
-function buyRare(){
+updateAuto();
 
-let cost=Math.floor(250*Math.pow(3,save.rareLevel));
+};
 
-if(save.coins>=cost){
+function applyOfflineProgress(){
 
-save.coins-=cost;
-save.rareLevel++;
+let now = Date.now();
 
-update();
+let diff =
+(now - game.lastSave)/1000;
 
-}
+if(diff < 60)
+return;
 
-}
+let incomePerMinute =
+(game.autoUnlocked ? 200 : 0);
 
-function buyAuto(){
+incomePerMinute *=
+(1 + game.multiplierLevel);
 
-let cost=Math.floor(1000*Math.pow(2.5,save.autoLevel));
+incomePerMinute *=
+(1 + game.rebirthTokens);
 
-if(save.coins>=cost){
+let reward =
+incomePerMinute *
+(diff/60);
 
-save.coins-=cost;
-save.autoLevel++;
+if(reward > 0){
 
-update();
+game.coins += reward;
 
-}
+game.lifetimeCoins += reward;
 
-}
-
-function buySpeed(){
-
-let cost=Math.floor(5000*Math.pow(3,save.speedLevel));
-
-if(save.coins>=cost){
-
-save.coins-=cost;
-save.speedLevel++;
-
-restartAuto();
-update();
+message(
+`💤 Offline earnings: ${format(reward)}`
+);
 
 }
 
 }
+
+function switchTab(name){
+
+document
+.querySelectorAll(".panel")
+.forEach(p =>
+p.classList.remove("active")
+);
+
+document
+.getElementById(name)
+.classList.add("active");
+
+document
+.querySelectorAll(".tab")
+.forEach(t =>
+t.classList.remove("active")
+);
+
+event.target.classList.add(
+"active"
+);
+
+}
+
+applyOfflineProgress();
+updateTopbar();
+
+</script>
+
+<script>
+
+/* =========================
+   SHOP DATA
+========================= */
+
+const upgrades = {
+
+multiplier:{
+name:"💰 Coin Multiplier",
+baseCost:50,
+levelKey:"multiplierLevel",
+desc:"All winnings are multiplied."
+},
+
+luck:{
+name:"🍀 Luck",
+baseCost:250,
+levelKey:"luckLevel",
+desc:"Better chance for rare symbols."
+},
+
+rare:{
+name:"💎 Rare Symbols",
+baseCost:1000,
+levelKey:"rareLevel",
+desc:"Unlock stronger symbols."
+},
+
+auto:{
+name:"🤖 Auto Spin",
+baseCost:5000,
+special:true,
+desc:"Unlock automatic spinning."
+},
+
+speed:{
+name:"⚡ Spin Speed",
+baseCost:2500,
+levelKey:"autoSpeedLevel",
+desc:"Auto-spin becomes faster."
+}
+
+};
+
+/* =========================
+   COST FORMULA
+========================= */
+
+function upgradeCost(id, level){
+
+const u = upgrades[id];
+
+return Math.floor(
+u.baseCost *
+Math.pow(1.65, level)
+);
+
+}
+
+/* =========================
+   BUYING
+========================= */
+
+function buyUpgrade(id, amount){
+
+if(id === "auto"){
+
+if(game.autoUnlocked)
+return;
+
+if(game.coins >= upgrades.auto.baseCost){
+
+game.coins -= upgrades.auto.baseCost;
+
+game.autoUnlocked = true;
+
+message("🤖 Auto Spin Unlocked!");
+
+updateAuto();
+renderAll();
+
+}
+
+return;
+
+}
+
+const upgrade =
+upgrades[id];
+
+for(let i=0;i<amount;i++){
+
+const level =
+game[upgrade.levelKey];
+
+const cost =
+upgradeCost(id, level);
+
+if(game.coins < cost)
+break;
+
+game.coins -= cost;
+
+game[upgrade.levelKey]++;
+
+}
+
+renderAll();
+
+}
+
+function buyMax(id){
+
+if(id === "auto"){
+buyUpgrade("auto",1);
+return;
+}
+
+const upgrade =
+upgrades[id];
+
+while(true){
+
+const level =
+game[upgrade.levelKey];
+
+const cost =
+upgradeCost(id, level);
+
+if(game.coins < cost)
+break;
+
+game.coins -= cost;
+
+game[upgrade.levelKey]++;
+
+}
+
+renderAll();
+
+}
+
+/* =========================
+   SHOP RENDER
+========================= */
+
+function renderShop(){
+
+let html = "";
+
+for(const id in upgrades){
+
+const u = upgrades[id];
+
+if(id === "auto"){
+
+html += `
+<div class="upgrade">
+
+<div class="upgrade-name">
+${u.name}
+</div>
+
+<div>
+${u.desc}
+</div>
+
+<div class="upgrade-cost">
+Cost: ${format(u.baseCost)}
+</div>
+
+<div class="buy-buttons">
+
+<button
+onclick="buyUpgrade('auto',1)">
+Buy
+</button>
+
+</div>
+
+</div>
+`;
+
+continue;
+
+}
+
+const level =
+game[u.levelKey];
+
+const cost =
+upgradeCost(id, level);
+
+html += `
+<div class="upgrade">
+
+<div class="upgrade-name">
+${u.name}
+</div>
+
+<div>
+${u.desc}
+</div>
+
+<div>
+Level: ${level}
+</div>
+
+<div class="upgrade-cost">
+Cost: ${format(cost)}
+</div>
+
+<div class="buy-buttons">
+
+<button
+onclick="buyUpgrade('${id}',1)">
+x1
+</button>
+
+<button
+onclick="buyUpgrade('${id}',10)">
+x10
+</button>
+
+<button
+onclick="buyMax('${id}')">
+MAX
+</button>
+
+</div>
+
+</div>
+`;
+
+}
+
+document.getElementById("shop")
+.innerHTML = html;
+
+}
+
+/* =========================
+   ACHIEVEMENTS
+========================= */
+
+const achievementList = [
+
+{
+id:"coins1",
+name:"First Cash",
+check:()=>game.coins>=100
+},
+
+{
+id:"coins2",
+name:"Small Fortune",
+check:()=>game.coins>=10000
+},
+
+{
+id:"coins3",
+name:"Millionaire",
+check:()=>game.coins>=1000000
+},
+
+{
+id:"spins1",
+name:"100 Spins",
+check:()=>game.spins>=100
+},
+
+{
+id:"spins2",
+name:"1000 Spins",
+check:()=>game.spins>=1000
+},
+
+{
+id:"jackpot1",
+name:"First Jackpot",
+check:()=>game.stats.jackpots>=1
+},
+
+{
+id:"rebirth1",
+name:"First Rebirth",
+check:()=>game.rebirthTokens>=1
+}
+
+];
+
+function checkAchievements(){
+
+achievementList.forEach(a=>{
+
+if(
+!game.achievements[a.id]
+&& a.check()
+){
+
+game.achievements[a.id]=true;
+
+message(
+`🏆 Achievement: ${a.name}`
+);
+
+particleBurst();
+
+}
+
+});
+
+}
+
+/* =========================
+   STATS TAB
+========================= */
+
+function renderStats(){
+
+let achievementsHTML =
+achievementList.map(a=>{
+
+const unlocked =
+game.achievements[a.id];
+
+return `
+<div class="achievement">
+${unlocked ? "✅" : "⬜"}
+${a.name}
+</div>
+`;
+
+}).join("");
+
+document.getElementById("stats")
+.innerHTML = `
+
+<h2>Statistics</h2>
+
+<p>
+Total Coins:
+${format(game.lifetimeCoins)}
+</p>
+
+<p>
+Spins:
+${format(game.spins)}
+</p>
+
+<p>
+Jackpots:
+${format(game.stats.jackpots)}
+</p>
+
+<p>
+Biggest Win:
+${format(game.stats.biggestWin)}
+</p>
+
+<hr style="margin:10px 0;">
+
+<h3>Achievements</h3>
+
+${achievementsHTML}
+
+`;
+
+}
+
+/* =========================
+   REBIRTH
+========================= */
+
+const REBIRTH_COST =
+1000000;
 
 function rebirth(){
 
-if(save.coins<1000000) return;
+if(
+game.coins <
+REBIRTH_COST
+){
 
-save.rebirthTokens++;
-
-save.coins=0;
-
-save.multiplier=1;
-save.multiLevel=0;
-
-save.rareLevel=0;
-
-save.autoLevel=0;
-
-save.speedLevel=0;
-
-update();
-
-}
-
-let autoLoop;
-
-function restartAuto(){
-
-clearInterval(autoLoop);
-
-if(save.autoLevel>0){
-
-let speed=Math.max(
-100,
-2000-(save.speedLevel*200)
+message(
+`Need ${format(REBIRTH_COST)} coins`
 );
 
-autoLoop=setInterval(()=>{
-
-for(let i=0;i<save.autoLevel;i++){
-
-spin();
+return;
 
 }
 
-},speed);
+game.rebirthTokens++;
+
+game.coins = 0;
+
+game.multiplierLevel = 0;
+game.luckLevel = 0;
+game.rareLevel = 0;
+game.autoSpeedLevel = 0;
+
+message(
+`🔥 Rebirth Complete`
+);
+
+particleBurst();
+
+renderAll();
 
 }
 
+function renderRebirth(){
+
+document.getElementById(
+"rebirth"
+).innerHTML = `
+
+<h2>Rebirth</h2>
+
+<p>
+Current Tokens:
+${game.rebirthTokens}
+</p>
+
+<p>
+Each token permanently boosts
+all winnings by +25%.
+</p>
+
+<div class="rebirth-shop-item">
+
+<p>
+Requirement:
+${format(REBIRTH_COST)}
+coins
+</p>
+
+<button
+onclick="rebirth()">
+REBIRTH
+</button>
+
+</div>
+
+`;
+
 }
 
-function update(){
+/* =========================
+   MAIN RENDER
+========================= */
 
-coins.textContent=
-Math.floor(save.coins).toLocaleString();
+function renderAll(){
 
-tokens.textContent=
-save.rebirthTokens;
+updateTopbar();
 
-multiLevel.textContent=
-save.multiLevel;
+renderShop();
 
-rareLevel.textContent=
-save.rareLevel;
+renderStats();
 
-autoLevel.textContent=
-save.autoLevel;
+renderRebirth();
 
-speedLevel.textContent=
-save.speedLevel;
+checkAchievements();
 
-multiCost.textContent=
+saveGame();
+
+}
+
+renderAll();
+
+</script>
+
+<script>
+
+/* =========================
+   REBIRTH SHOP DATA
+========================= */
+
+if(!game.rebirthShop){
+game.rebirthShop = {
+permaLuck:0,
+permaMulti:0
+};
+}
+
+function rebirthCost(level){
+return Math.floor(1 + (level * 2));
+}
+
+function buyRebirthUpgrade(type){
+
+const level =
+game.rebirthShop[type];
+
+const cost =
+rebirthCost(level);
+
+if(game.rebirthTokens < cost)
+return;
+
+game.rebirthTokens -= cost;
+
+game.rebirthShop[type]++;
+
+message("🌟 Permanent Upgrade Purchased");
+
+renderAll();
+
+}
+
+/* =========================
+   OVERRIDE RANDOM SYMBOL
+   WITH REBIRTH LUCK
+========================= */
+
+const oldRandomSymbol = randomSymbol;
+
+randomSymbol = function(){
+
+const pool = unlockedSymbols();
+
+const luckPower =
+1 +
+(game.luckLevel * 0.05) +
+(game.rebirthShop.permaLuck * 0.15);
+
+let roll =
+Math.random() ** luckPower;
+
+let index =
 Math.floor(
-50*Math.pow(1.8,save.multiLevel)
-).toLocaleString();
+roll * pool.length
+);
 
-rareCost.textContent=
-Math.floor(
-250*Math.pow(3,save.rareLevel)
-).toLocaleString();
+return pool[
+Math.min(index,pool.length-1)
+];
 
-autoCost.textContent=
-Math.floor(
-1000*Math.pow(2.5,save.autoLevel)
-).toLocaleString();
+};
 
-speedCost.textContent=
-Math.floor(
-5000*Math.pow(3,save.speedLevel)
-).toLocaleString();
+/* =========================
+   BETTER WIN SCALING
+========================= */
 
-localStorage.setItem(
-"slotSave",
-JSON.stringify(save)
+const oldEvaluate = evaluateSpin;
+
+evaluateSpin = function(final){
+
+let reward = 0;
+
+const a = final[0];
+const b = final[1];
+const c = final[2];
+
+if(
+a.icon===b.icon &&
+b.icon===c.icon
+){
+
+reward = a.value * 25;
+
+reward *= (
+1 +
+game.rebirthShop.permaMulti
+);
+
+game.stats.jackpots++;
+
+message(
+`🎉 JACKPOT +${format(reward)}`
+);
+
+particleBurst();
+screenShake();
+
+floatingText(
+`+${format(reward)}`
+);
+
+}
+else if(
+a.icon===b.icon ||
+a.icon===c.icon ||
+b.icon===c.icon
+){
+
+reward =
+Math.max(
+a.value,
+b.value,
+c.value
+) * 5;
+
+floatingText(
+`+${format(reward)}`
+);
+
+message(
+`✨ Match`
+);
+
+}
+else{
+
+message(
+"Try again..."
 );
 
 }
 
-setInterval(update,1000);
+reward *=
+(1 + game.multiplierLevel);
 
-update();
-restartAuto();
+reward *=
+(1 + game.rebirthTokens*0.25);
+
+game.coins += reward;
+game.lifetimeCoins += reward;
+
+if(
+reward >
+game.stats.biggestWin
+){
+game.stats.biggestWin =
+reward;
+}
+
+renderAll();
+
+};
+
+/* =========================
+   FLOATING TEXT
+========================= */
+
+function floatingText(text){
+
+const div =
+document.createElement("div");
+
+div.textContent = text;
+
+div.style.position = "fixed";
+div.style.left = "50%";
+div.style.top = "35%";
+
+div.style.transform =
+"translateX(-50%)";
+
+div.style.fontSize =
+"2rem";
+
+div.style.color =
+"#00ff88";
+
+div.style.fontWeight =
+"bold";
+
+div.style.pointerEvents =
+"none";
+
+div.style.transition =
+"all 1s ease";
+
+document.body.appendChild(div);
+
+setTimeout(()=>{
+
+div.style.top = "20%";
+div.style.opacity = "0";
+
+},20);
+
+setTimeout(
+()=>div.remove(),
+1200
+);
+
+}
+
+/* =========================
+   SCREEN SHAKE
+========================= */
+
+function screenShake(){
+
+document.body.animate([
+
+{
+transform:"translate(5px,0)"
+},
+{
+transform:"translate(-5px,0)"
+},
+{
+transform:"translate(4px,0)"
+},
+{
+transform:"translate(-4px,0)"
+},
+{
+transform:"translate(0,0)"
+}
+
+],{
+duration:400
+});
+
+}
+
+/* =========================
+   BETTER REBIRTH TAB
+========================= */
+
+const oldRenderRebirth =
+renderRebirth;
+
+renderRebirth = function(){
+
+document.getElementById(
+"rebirth"
+).innerHTML = `
+
+<h2>🔥 Rebirth</h2>
+
+<p>
+Tokens:
+${game.rebirthTokens}
+</p>
+
+<p>
+Requirement:
+${format(REBIRTH_COST)}
+coins
+</p>
+
+<button
+onclick="rebirth()">
+REBIRTH
+</button>
+
+<hr style="margin:15px 0;">
+
+<h3>Permanent Upgrades</h3>
+
+<div class="rebirth-shop-item">
+
+<b>🍀 Permanent Luck</b>
+
+<p>
+Level:
+${game.rebirthShop.permaLuck}
+</p>
+
+<p>
+Cost:
+${rebirthCost(
+game.rebirthShop.permaLuck
+)}
+Tokens
+</p>
+
+<button
+onclick="buyRebirthUpgrade('permaLuck')">
+Buy
+</button>
+
+</div>
+
+<div class="rebirth-shop-item">
+
+<b>💰 Permanent Multiplier</b>
+
+<p>
+Level:
+${game.rebirthShop.permaMulti}
+</p>
+
+<p>
+Cost:
+${rebirthCost(
+game.rebirthShop.permaMulti
+)}
+Tokens
+</p>
+
+<button
+onclick="buyRebirthUpgrade('permaMulti')">
+Buy
+</button>
+
+</div>
+
+`;
+
+};
+
+/* =========================
+   RARE REEL COLORS
+========================= */
+
+function colorizeReels(){
+
+const reels = [r1,r2,r3];
+
+reels.forEach(reel=>{
+
+const icon =
+reel.textContent;
+
+let color = "white";
+
+if(icon==="💎")
+color="#66ccff";
+
+if(icon==="7️⃣")
+color="#ff66ff";
+
+if(icon==="👑")
+color="#ffd700";
+
+if(icon==="🌌")
+color="#00ffff";
+
+reel.style.color =
+color;
+
+reel.style.textShadow =
+`0 0 15px ${color}`;
+
+});
+
+}
+
+setInterval(
+colorizeReels,
+100
+);
+
+/* =========================
+   ACHIEVEMENT BONUS
+========================= */
+
+achievementList.push({
+
+id:"legend",
+
+name:"Legendary Gambler",
+
+check:()=>
+game.lifetimeCoins >=
+100000000
+
+});
+
+/* =========================
+   FINAL RENDER REFRESH
+========================= */
+
+setInterval(()=>{
+
+renderStats();
+
+},3000);
+
+renderAll();
 
 </script>
 
