@@ -554,6 +554,83 @@ result.icon;
 
 }
 
+function evaluateMultiBoard(final){
+
+let reward = 0;
+let jackpots = 0;
+
+for(let row=0; row<3; row++){
+
+const a = final[row*3];
+const b = final[row*3+1];
+const c = final[row*3+2];
+
+if(
+a.icon===b.icon &&
+b.icon===c.icon
+){
+
+reward += a.value * 25;
+jackpots++;
+
+}
+else if(
+a.icon===b.icon ||
+a.icon===c.icon ||
+b.icon===c.icon
+){
+
+reward +=
+Math.max(
+a.value,
+b.value,
+c.value
+) * 5;
+
+}
+
+}
+
+reward *=
+(1 + game.multiplierLevel);
+
+reward *=
+(1 + game.rebirthTokens * 0.25);
+
+game.coins += reward;
+game.lifetimeCoins += reward;
+
+if(jackpots > 0){
+
+game.stats.jackpots += jackpots;
+
+message(
+`🎉 ${jackpots} Jackpot${jackpots>1?'s':''}! +${format(reward)}`
+);
+
+particleBurst();
+
+if(typeof screenShake === "function"){
+screenShake();
+}
+
+}
+else{
+
+message(
+`💰 Won ${format(reward)}`
+);
+
+}
+
+if(reward > game.stats.biggestWin){
+game.stats.biggestWin = reward;
+}
+
+renderAll();
+
+}
+
 evaluateSpin(final);
 
 spinBtn.disabled = false;
