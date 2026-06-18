@@ -1,228 +1,394 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Neon Spin Rush</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Idle Slot Empire</title>
 
 <style>
 body{
-    margin:0;
-    font-family:Arial,sans-serif;
-    background:linear-gradient(135deg,#0f0f0f,#1a0033);
-    color:white;
-    text-align:center;
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-}
-
-.game{
-    width:90%;
-    max-width:600px;
+background:#121212;
+color:white;
+font-family:Arial;
+text-align:center;
+margin:0;
 }
 
 h1{
-    color:#ffdd00;
-    text-shadow:0 0 20px #ffdd00;
+color:gold;
 }
 
-.stats{
-    display:flex;
-    justify-content:space-around;
-    margin:20px 0;
-    font-size:1.2rem;
+.container{
+max-width:1000px;
+margin:auto;
+padding:20px;
 }
 
 .reels{
-    display:flex;
-    justify-content:center;
-    gap:15px;
-    margin:30px 0;
+display:flex;
+justify-content:center;
+gap:10px;
+margin:20px;
 }
 
 .reel{
-    width:100px;
-    height:100px;
-    background:#111;
-    border:3px solid #ff00ff;
-    border-radius:15px;
-    font-size:60px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    box-shadow:0 0 20px #ff00ff;
+width:100px;
+height:100px;
+font-size:60px;
+display:flex;
+align-items:center;
+justify-content:center;
+background:#222;
+border:3px solid gold;
+border-radius:10px;
 }
 
 button{
-    padding:15px 40px;
-    font-size:1.2rem;
-    border:none;
-    border-radius:10px;
-    cursor:pointer;
-    background:#00e5ff;
-    color:black;
-    font-weight:bold;
+padding:10px;
+margin:5px;
+cursor:pointer;
 }
 
-button:hover{
-    transform:scale(1.05);
+.shop{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:10px;
+margin-top:20px;
 }
 
-.result{
-    margin-top:20px;
-    font-size:1.4rem;
-    min-height:40px;
+.card{
+background:#222;
+padding:10px;
+border-radius:10px;
 }
 
-.win{
-    animation:flash .3s infinite alternate;
+.stat{
+font-size:20px;
+margin:10px;
 }
 
-@keyframes flash{
-    from{filter:brightness(1);}
-    to{filter:brightness(1.8);}
+.rebirth{
+margin-top:20px;
+background:#300;
+padding:10px;
+border-radius:10px;
 }
+
 </style>
 </head>
 <body>
 
-<div class="game">
-    <h1>🎰 Neon Spin Rush</h1>
+<div class="container">
 
-    <div class="stats">
-        <div>🪙 Coins: <span id="coins">100</span></div>
-        <div>🏆 Best: <span id="best">100</span></div>
-    </div>
+<h1>🎰 Idle Slot Empire</h1>
 
-    <div class="reels">
-        <div class="reel" id="r1">🍒</div>
-        <div class="reel" id="r2">🍋</div>
-        <div class="reel" id="r3">⭐</div>
-    </div>
+<div class="stat">
+Coins: <span id="coins">0</span>
+</div>
 
-    <button id="spin">SPIN</button>
+<div class="stat">
+Rebirth Tokens: <span id="tokens">0</span>
+</div>
 
-    <div class="result" id="result"></div>
+<div class="reels">
+<div class="reel" id="r1">🍒</div>
+<div class="reel" id="r2">🍒</div>
+<div class="reel" id="r3">🍒</div>
+</div>
+
+<button onclick="spin()">SPIN</button>
+
+<div id="result"></div>
+
+<h2>Shop</h2>
+
+<div class="shop">
+
+<div class="card">
+<h3>Coin Multiplier</h3>
+Level: <span id="multiLevel">0</span><br>
+Cost: <span id="multiCost">50</span><br>
+<button onclick="buyMultiplier()">Buy</button>
+</div>
+
+<div class="card">
+<h3>Unlock Rare Icons</h3>
+Unlocked: <span id="rareLevel">0</span><br>
+Cost: <span id="rareCost">250</span><br>
+<button onclick="buyRare()">Buy</button>
+</div>
+
+<div class="card">
+<h3>Auto Spin</h3>
+Level: <span id="autoLevel">0</span><br>
+Cost: <span id="autoCost">1000</span><br>
+<button onclick="buyAuto()">Buy</button>
+</div>
+
+<div class="card">
+<h3>Spin Speed</h3>
+Level: <span id="speedLevel">0</span><br>
+Cost: <span id="speedCost">5000</span><br>
+<button onclick="buySpeed()">Buy</button>
+</div>
+
+</div>
+
+<div class="rebirth">
+<h2>Rebirth</h2>
+<p>Requires 1,000,000 Coins</p>
+<button onclick="rebirth()">REBIRTH</button>
+</div>
+
 </div>
 
 <script>
-const symbols = ["🍒","🍋","🍉","⭐","💎","🔔","🍀","7️⃣"];
 
-let coins = 100;
-let best = 100;
+let save = JSON.parse(localStorage.getItem("slotSave")) || {
 
-const coinsEl = document.getElementById("coins");
-const bestEl = document.getElementById("best");
-const resultEl = document.getElementById("result");
-const spinBtn = document.getElementById("spin");
+coins:0,
 
-function updateUI(){
-    coinsEl.textContent = coins;
-    bestEl.textContent = best;
-}
+multiplier:1,
+multiLevel:0,
 
-function beep(freq,time){
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
+rareLevel:0,
 
-    osc.connect(gain);
-    gain.connect(ctx.destination);
+autoLevel:0,
 
-    osc.frequency.value = freq;
-    osc.start();
+speedLevel:0,
 
-    gain.gain.setValueAtTime(0.1, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(
-        0.0001,
-        ctx.currentTime + time
-    );
+rebirthTokens:0
 
-    osc.stop(ctx.currentTime + time);
+};
+
+let symbols = ["🍒","🍋","🍉","⭐"];
+
+function getSymbols(){
+
+let arr=[...symbols];
+
+if(save.rareLevel>=1) arr.push("💎");
+if(save.rareLevel>=2) arr.push("7️⃣");
+if(save.rareLevel>=3) arr.push("👑");
+if(save.rareLevel>=4) arr.push("🌌");
+
+return arr;
+
 }
 
 function randomSymbol(){
-    return symbols[Math.floor(Math.random()*symbols.length)];
+
+let pool=getSymbols();
+
+return pool[Math.floor(Math.random()*pool.length)];
+
 }
 
-spinBtn.onclick = () => {
+function spin(){
 
-    if(coins < 5){
-        resultEl.textContent = "Game Over! Refresh to restart.";
-        return;
-    }
+let a=randomSymbol();
+let b=randomSymbol();
+let c=randomSymbol();
 
-    coins -= 5;
-    updateUI();
+r1.textContent=a;
+r2.textContent=b;
+r3.textContent=c;
 
-    spinBtn.disabled = true;
-    resultEl.textContent = "";
+let reward=0;
 
-    let reels = [
-        document.getElementById("r1"),
-        document.getElementById("r2"),
-        document.getElementById("r3")
-    ];
+if(a===b && b===c){
 
-    let intervals = [];
+reward=100;
 
-    reels.forEach((reel,i)=>{
-        intervals[i] = setInterval(()=>{
-            reel.textContent = randomSymbol();
-        },70);
-    });
+if(a==="💎") reward=500;
+if(a==="7️⃣") reward=1000;
+if(a==="👑") reward=5000;
+if(a==="🌌") reward=25000;
 
-    setTimeout(()=>{
-        clearInterval(intervals[0]);
-        beep(400,0.05);
-    },1000);
+}
+else if(a===b || b===c || a===c){
 
-    setTimeout(()=>{
-        clearInterval(intervals[1]);
-        beep(500,0.05);
-    },1400);
+reward=25;
 
-    setTimeout(()=>{
-        clearInterval(intervals[2]);
-        beep(700,0.08);
+}
 
-        const a = reels[0].textContent;
-        const b = reels[1].textContent;
-        const c = reels[2].textContent;
+reward*=save.multiplier;
+reward*=Math.max(1, save.rebirthTokens+1);
 
-        let reward = 0;
+save.coins+=reward;
 
-        if(a===b && b===c){
-            reward = 100;
-            resultEl.textContent = "🎉 JACKPOT +100!";
-            document.body.classList.add("win");
-            setTimeout(()=>document.body.classList.remove("win"),1500);
-            beep(900,0.2);
-        }
-        else if(a===b || b===c || a===c){
-            reward = 20;
-            resultEl.textContent = "✨ Nice Match +20!";
-            beep(700,0.15);
-        }
-        else{
-            resultEl.textContent = "Try Again!";
-        }
+result.innerHTML=
+reward>0 ?
+`Won ${reward.toLocaleString()} coins!`
+:
+`No match`;
 
-        coins += reward;
+update();
 
-        if(coins > best){
-            best = coins;
-        }
+}
 
-        updateUI();
-        spinBtn.disabled = false;
+function buyMultiplier(){
 
-    },1800);
-};
+let cost=Math.floor(50*Math.pow(1.8,save.multiLevel));
 
-updateUI();
+if(save.coins>=cost){
+
+save.coins-=cost;
+save.multiLevel++;
+save.multiplier*=2;
+
+update();
+
+}
+
+}
+
+function buyRare(){
+
+let cost=Math.floor(250*Math.pow(3,save.rareLevel));
+
+if(save.coins>=cost){
+
+save.coins-=cost;
+save.rareLevel++;
+
+update();
+
+}
+
+}
+
+function buyAuto(){
+
+let cost=Math.floor(1000*Math.pow(2.5,save.autoLevel));
+
+if(save.coins>=cost){
+
+save.coins-=cost;
+save.autoLevel++;
+
+update();
+
+}
+
+}
+
+function buySpeed(){
+
+let cost=Math.floor(5000*Math.pow(3,save.speedLevel));
+
+if(save.coins>=cost){
+
+save.coins-=cost;
+save.speedLevel++;
+
+restartAuto();
+update();
+
+}
+
+}
+
+function rebirth(){
+
+if(save.coins<1000000) return;
+
+save.rebirthTokens++;
+
+save.coins=0;
+
+save.multiplier=1;
+save.multiLevel=0;
+
+save.rareLevel=0;
+
+save.autoLevel=0;
+
+save.speedLevel=0;
+
+update();
+
+}
+
+let autoLoop;
+
+function restartAuto(){
+
+clearInterval(autoLoop);
+
+if(save.autoLevel>0){
+
+let speed=Math.max(
+100,
+2000-(save.speedLevel*200)
+);
+
+autoLoop=setInterval(()=>{
+
+for(let i=0;i<save.autoLevel;i++){
+
+spin();
+
+}
+
+},speed);
+
+}
+
+}
+
+function update(){
+
+coins.textContent=
+Math.floor(save.coins).toLocaleString();
+
+tokens.textContent=
+save.rebirthTokens;
+
+multiLevel.textContent=
+save.multiLevel;
+
+rareLevel.textContent=
+save.rareLevel;
+
+autoLevel.textContent=
+save.autoLevel;
+
+speedLevel.textContent=
+save.speedLevel;
+
+multiCost.textContent=
+Math.floor(
+50*Math.pow(1.8,save.multiLevel)
+).toLocaleString();
+
+rareCost.textContent=
+Math.floor(
+250*Math.pow(3,save.rareLevel)
+).toLocaleString();
+
+autoCost.textContent=
+Math.floor(
+1000*Math.pow(2.5,save.autoLevel)
+).toLocaleString();
+
+speedCost.textContent=
+Math.floor(
+5000*Math.pow(3,save.speedLevel)
+).toLocaleString();
+
+localStorage.setItem(
+"slotSave",
+JSON.stringify(save)
+);
+
+}
+
+setInterval(update,1000);
+
+update();
+restartAuto();
+
 </script>
 
 </body>
