@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neon Spin Rush</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:linear-gradient(135deg,#0f0f0f,#1a0033);
+    color:white;
+    text-align:center;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.game{
+    width:90%;
+    max-width:600px;
+}
+
+h1{
+    color:#ffdd00;
+    text-shadow:0 0 20px #ffdd00;
+}
+
+.stats{
+    display:flex;
+    justify-content:space-around;
+    margin:20px 0;
+    font-size:1.2rem;
+}
+
+.reels{
+    display:flex;
+    justify-content:center;
+    gap:15px;
+    margin:30px 0;
+}
+
+.reel{
+    width:100px;
+    height:100px;
+    background:#111;
+    border:3px solid #ff00ff;
+    border-radius:15px;
+    font-size:60px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 0 20px #ff00ff;
+}
+
+button{
+    padding:15px 40px;
+    font-size:1.2rem;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    background:#00e5ff;
+    color:black;
+    font-weight:bold;
+}
+
+button:hover{
+    transform:scale(1.05);
+}
+
+.result{
+    margin-top:20px;
+    font-size:1.4rem;
+    min-height:40px;
+}
+
+.win{
+    animation:flash .3s infinite alternate;
+}
+
+@keyframes flash{
+    from{filter:brightness(1);}
+    to{filter:brightness(1.8);}
+}
+</style>
+</head>
+<body>
+
+<div class="game">
+    <h1>🎰 Neon Spin Rush</h1>
+
+    <div class="stats">
+        <div>🪙 Coins: <span id="coins">100</span></div>
+        <div>🏆 Best: <span id="best">100</span></div>
+    </div>
+
+    <div class="reels">
+        <div class="reel" id="r1">🍒</div>
+        <div class="reel" id="r2">🍋</div>
+        <div class="reel" id="r3">⭐</div>
+    </div>
+
+    <button id="spin">SPIN</button>
+
+    <div class="result" id="result"></div>
+</div>
+
+<script>
+const symbols = ["🍒","🍋","🍉","⭐","💎","🔔","🍀","7️⃣"];
+
+let coins = 100;
+let best = 100;
+
+const coinsEl = document.getElementById("coins");
+const bestEl = document.getElementById("best");
+const resultEl = document.getElementById("result");
+const spinBtn = document.getElementById("spin");
+
+function updateUI(){
+    coinsEl.textContent = coins;
+    bestEl.textContent = best;
+}
+
+function beep(freq,time){
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.frequency.value = freq;
+    osc.start();
+
+    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(
+        0.0001,
+        ctx.currentTime + time
+    );
+
+    osc.stop(ctx.currentTime + time);
+}
+
+function randomSymbol(){
+    return symbols[Math.floor(Math.random()*symbols.length)];
+}
+
+spinBtn.onclick = () => {
+
+    if(coins < 5){
+        resultEl.textContent = "Game Over! Refresh to restart.";
+        return;
+    }
+
+    coins -= 5;
+    updateUI();
+
+    spinBtn.disabled = true;
+    resultEl.textContent = "";
+
+    let reels = [
+        document.getElementById("r1"),
+        document.getElementById("r2"),
+        document.getElementById("r3")
+    ];
+
+    let intervals = [];
+
+    reels.forEach((reel,i)=>{
+        intervals[i] = setInterval(()=>{
+            reel.textContent = randomSymbol();
+        },70);
+    });
+
+    setTimeout(()=>{
+        clearInterval(intervals[0]);
+        beep(400,0.05);
+    },1000);
+
+    setTimeout(()=>{
+        clearInterval(intervals[1]);
+        beep(500,0.05);
+    },1400);
+
+    setTimeout(()=>{
+        clearInterval(intervals[2]);
+        beep(700,0.08);
+
+        const a = reels[0].textContent;
+        const b = reels[1].textContent;
+        const c = reels[2].textContent;
+
+        let reward = 0;
+
+        if(a===b && b===c){
+            reward = 100;
+            resultEl.textContent = "🎉 JACKPOT +100!";
+            document.body.classList.add("win");
+            setTimeout(()=>document.body.classList.remove("win"),1500);
+            beep(900,0.2);
+        }
+        else if(a===b || b===c || a===c){
+            reward = 20;
+            resultEl.textContent = "✨ Nice Match +20!";
+            beep(700,0.15);
+        }
+        else{
+            resultEl.textContent = "Try Again!";
+        }
+
+        coins += reward;
+
+        if(coins > best){
+            best = coins;
+        }
+
+        updateUI();
+        spinBtn.disabled = false;
+
+    },1800);
+};
+
+updateUI();
+</script>
+
+</body>
+</html>
